@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 
-// Простая функция для поиска общей подстроки
 std::string findCommonSubstring(const std::string& s1, const std::string& s2) {
     std::string longest = "";
     
@@ -29,7 +28,6 @@ int main() {
     std::cout << "Введите 10 слов: ";
     std::getline(std::cin, input);
 
-    // Простой разбор строки на слова
     std::string words[10];
     int wordCount = 0;
     std::string currentWord = "";
@@ -46,7 +44,6 @@ int main() {
             currentWord += c;
         }
     }
-    // Добавляем последнее слово
     if (!currentWord.empty() && wordCount < 10) {
         words[wordCount] = currentWord;
         wordCount++;
@@ -57,13 +54,11 @@ int main() {
         return 1;
     }
 
-    // Подсчет статистики
     int wordsWithB = 0;
     int maxWordLength = 0;
     int dInLastWord = 0;
     int matchingChars = 0;
     
-    // Преобразование в верхний регистр
     std::string upperString = "";
     for (char c : input) {
         if (c >= 'a' && c <= 'z') {
@@ -73,26 +68,21 @@ int main() {
         }
     }
 
-    // Обработка слов
     for (int i = 0; i < 10; i++) {
         const std::string& w = words[i];
         
-        // Слова на 'b'
         if (!w.empty() && (w.back() == 'b' || w.back() == 'B')) {
             wordsWithB++;
         }
         
-        // Самое длинное слово
         if (w.length() > maxWordLength) {
             maxWordLength = w.length();
         }
         
-        // Совпадает второй и предпоследний символ
         if (w.length() >= 4 && w[1] == w[w.length() - 2]) {
             matchingChars++;
         }
         
-        // Буквы 'd' в последнем слове
         if (i == 9) {
             for (char c : w) {
                 if (c == 'd' || c == 'D') {
@@ -102,7 +92,6 @@ int main() {
         }
     }
 
-    // Поиск самой длинной общей подстроки
     std::string longestCommon = "";
     for (int i = 0; i < 10; i++) {
         for (int j = i + 1; j < 10; j++) {
@@ -113,7 +102,6 @@ int main() {
         }
     }
 
-    // Вывод результатов
     std::cout << "\nРезультаты:\n";
     std::cout << "1. Слова на 'b': " << wordsWithB << std::endl;
     std::cout << "2. Длина самого длинного слова: " << maxWordLength << std::endl;
