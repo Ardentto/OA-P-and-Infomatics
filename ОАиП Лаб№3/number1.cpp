@@ -4,175 +4,215 @@
 #include <algorithm>
 #include <string>
 
+using namespace std;
+
+struct Dish {
+    string name;
+    string type;
+    double price;
+};
+
 class MenuManager {
 private:
-    std::vector<std::string> types = {"Закуски", "Основные блюда", "Десерты", "Напитки", "Для детей"};
-    std::string menuFile = "menu.txt";
-    std::string outputFile = "output.txt";
+    vector<string> types = {"Закуски", "Основные блюда", "Десерты", "Напитки", "Для детей"};
+    string menuFile = "menu.txt";
     
-    struct Dish {
-        std::string name;
-        std::string type;
-        double price;
-    };
-
-    std::vector<Dish> loadDishes() {
-        std::vector<Dish> dishes;
-        std::ifstream in(menuFile);
-        if (!in) return dishes;
+    vector<Dish> loadDishes() {
+        vector<Dish> dishes;
+        ifstream file(menuFile);
+        if (!file) return dishes;
         
-        std::string line;
-        while (std::getline(in, line)) {
+        string line;
+        while (getline(file, line)) {
             size_t pos1 = line.find(',');
             size_t pos2 = line.find(',', pos1 + 1);
-            if (pos1 != std::string::npos && pos2 != std::string::npos) {
-                dishes.push_back({
-                    line.substr(0, pos1),
-                    line.substr(pos1 + 1, pos2 - pos1 - 1),
-                    std::stod(line.substr(pos2 + 1))
-                });
+            if (pos1 != string::npos && pos2 != string::npos) {
+                Dish dish;
+                dish.name = line.substr(0, pos1);
+                dish.type = line.substr(pos1 + 1, pos2 - pos1 - 1);
+                dish.price = stod(line.substr(pos2 + 1));
+                dishes.push_back(dish);
             }
         }
         return dishes;
     }
-
-    void saveDishes(const std::vector<Dish>& dishes) {
-        std::ofstream out(menuFile);
+    
+    void saveDishes(const vector<Dish>& dishes) {
+        ofstream file(menuFile);
         for (const auto& dish : dishes) {
-            out << dish.name << "," << dish.type << "," << dish.price << "\n";
+            file << dish.name << "," << dish.type << "," << dish.price << "\n";
         }
     }
-
-    void logOperation(const std::string& operation, const std::string& result) {
-        std::ofstream out(outputFile, std::ios::app);
-        out << "=== " << operation << " ===\n" << result << "\n\n";
+    
+    void showMenu() {
+        cout << "\n=== Меню ресторана ===" << endl;
+        cout << "1. Создать новое меню" << endl;
+        cout << "2. Добавить блюдо" << endl;
+        cout << "3. Найти блюдо" << endl;
+        cout << "4. Сортировать блюда" << endl;
+        cout << "5. Блюда по цене" << endl;
+        cout << "6. Выйти" << endl;
+        cout << "Выберите действие: ";
+    }
+    
+    void showTypes() {
+        cout << "Типы блюд: ";
+        for (int i = 0; i < types.size(); i++) {
+            cout << i + 1 << "." << types[i] << " ";
+        }
+        cout << endl;
+    }
+    
+    Dish createDish() {
+        Dish dish;
+        
+        cout << "Название блюда: ";
+        getline(cin, dish.name);
+        
+        showTypes();
+        cout << "Выберите тип: ";
+        int typeChoice;
+        cin >> typeChoice;
+        cin.ignore();
+        dish.type = types[typeChoice - 1];
+        
+        cout << "Цена: ";
+        cin >> dish.price;
+        cin.ignore();
+        
+        return dish;
     }
 
 public:
-    void createMenu() {
-        std::ofstream(menuFile).close();
-        std::ofstream(outputFile).close();
+    void createNewMenu() {
+        ofstream file(menuFile);
+        cout << "Создаем новое меню..." << endl;
         
         while (true) {
-            std::string name;
-            std::cout << "Название: ";
-            std::getline(std::cin, name);
-            if (name.empty()) break;
-
-            std::cout << "Тип (1-5): ";
-            for (size_t i = 0; i < types.size(); ++i) {
-                std::cout << i + 1 << "." << types[i] << " ";
-            }
-            std::cout << "\n";
+            Dish dish = createDish();
+            addDish(dish);
+            cout << "Блюдо добавлено! Добавить еще? (y/n): ";
             
-            int typeIdx;
-            std::cin >> typeIdx;
-            std::cin.ignore();
-            
-            double price;
-            std::cout << "Цена: ";
-            std::cin >> price;
-            std::cin.ignore();
-
-            addDish({name, types[typeIdx - 1], price});
-            std::cout << "Добавлено!\n";
+            string answer;
+            getline(cin, answer);
+            if (answer != "y") break;
         }
     }
-
+    
     void addDish(const Dish& dish) {
-        std::ofstream file(menuFile, std::ios::app);
+        ofstream file(menuFile, ios::app);
         file << dish.name << "," << dish.type << "," << dish.price << "\n";
-        logOperation("Добавление", dish.name + "," + dish.type + "," + std::to_string(dish.price));
+        cout << "Блюдо '" << dish.name << "' добавлено!" << endl;
     }
-
-    void searchDish() {
-        std::string target;
-        std::cout << "Название: ";
-        std::getline(std::cin, target);
+    
+    void findDish() {
+        cout << "Введите название блюда: ";
+        string name;
+        getline(cin, name);
         
-        auto dishes = loadDishes();
-        std::string result = "Не найдено";
+        vector<Dish> dishes = loadDishes();
+        bool found = false;
         
         for (const auto& dish : dishes) {
-            if (dish.name == target) {
-                result = dish.name + " | " + dish.type + " | " + std::to_string(dish.price);
+            if (dish.name == name) {
+                cout << "Найдено: " << dish.name << " | " 
+                     << dish.type << " | " << dish.price << " руб." << endl;
+                found = true;
                 break;
             }
         }
         
-        std::cout << result << "\n";
-        logOperation("Поиск", result);
+        if (!found) {
+            cout << "Блюдо не найдено!" << endl;
+        }
     }
-
-    void sortDishes() {
-        std::cout << "1.Тип 2.Цена: ";
+    
+    void sortMenu() {
+        cout << "Сортировать по: 1-типу, 2-цене: ";
         int choice;
-        std::cin >> choice;
-        std::cin.ignore();
+        cin >> choice;
+        cin.ignore();
         
-        auto dishes = loadDishes();
+        vector<Dish> dishes = loadDishes();
         
         if (choice == 1) {
-            std::sort(dishes.begin(), dishes.end(), 
+            sort(dishes.begin(), dishes.end(), 
                 [](const Dish& a, const Dish& b) { return a.type < b.type; });
-            logOperation("Сортировка", "По типу");
+            cout << "Отсортировано по типу!" << endl;
         } else {
-            std::sort(dishes.begin(), dishes.end(), 
+            sort(dishes.begin(), dishes.end(), 
                 [](const Dish& a, const Dish& b) { return a.price < b.price; });
-            logOperation("Сортировка", "По цене");
+            cout << "Отсортировано по цене!" << endl;
         }
         
         saveDishes(dishes);
     }
-
-    void filterByPrice() {
+    
+    void showByPrice() {
+        cout << "Максимальная цена: ";
         double maxPrice;
-        std::cout << "Макс.цена: ";
-        std::cin >> maxPrice;
-        std::cin.ignore();
+        cin >> maxPrice;
+        cin.ignore();
         
-        auto dishes = loadDishes();
-        std::string result;
+        vector<Dish> dishes = loadDishes();
+        bool found = false;
         
+        cout << "Блюда до " << maxPrice << " руб.:" << endl;
         for (const auto& dish : dishes) {
             if (dish.price <= maxPrice) {
-                result += dish.name + " | " + dish.type + " | " + std::to_string(dish.price) + "\n";
+                cout << "- " << dish.name << " | " << dish.type 
+                     << " | " << dish.price << " руб." << endl;
+                found = true;
             }
         }
         
-        std::cout << (result.empty() ? "Нет результатов\n" : result);
-        logOperation("Фильтр по цене", result.empty() ? "Нет результатов" : result);
+        if (!found) {
+            cout << "Блюд не найдено!" << endl;
+        }
     }
-
+    
+    void showAllDishes() {
+        vector<Dish> dishes = loadDishes();
+        
+        if (dishes.empty()) {
+            cout << "Меню пустое!" << endl;
+            return;
+        }
+        
+        cout << "\n=== Все блюда ===" << endl;
+        for (const auto& dish : dishes) {
+            cout << "- " << dish.name << " | " << dish.type 
+                 << " | " << dish.price << " руб." << endl;
+        }
+    }
+    
     void run() {
+        cout << "Добро пожаловать в систему управления меню!" << endl;
+        
         while (true) {
-            std::cout << "\n1.Создать 2.Добавить 3.Найти 4.Сортировать 5.Фильтр 6.Выход\nВыбор: ";
+            showMenu();
             int choice;
-            std::cin >> choice;
-            std::cin.ignore();
+            cin >> choice;
+            cin.ignore();
             
             switch (choice) {
-                case 1: createMenu(); break;
+                case 1: createNewMenu(); break;
                 case 2: {
-                    Dish d;
-                    std::cout << "Название: ";
-                    std::getline(std::cin, d.name);
-                    std::cout << "Тип (1-5): ";
-                    int t;
-                    std::cin >> t;
-                    std::cin.ignore();
-                    d.type = types[t-1];
-                    std::cout << "Цена: ";
-                    std::cin >> d.price;
-                    std::cin.ignore();
-                    addDish(d);
+                    Dish dish = createDish();
+                    addDish(dish);
                     break;
                 }
-                case 3: searchDish(); break;
-                case 4: sortDishes(); break;
-                case 5: filterByPrice(); break;
-                case 6: return;
+                case 3: findDish(); break;
+                case 4: sortMenu(); break;
+                case 5: showByPrice(); break;
+                case 6: 
+                    cout << "Выход из программы..." << endl;
+                    return;
+                default:
+                    cout << "Неверный выбор!" << endl;
             }
+            
+            showAllDishes();
         }
     }
 };
