@@ -1,0 +1,3 @@
+/Users/pborz/Desktop/cmake-build-debug/CMakeFiles/lab4.dir
+/Users/pborz/Desktop/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/pborz/Desktop/cmake-build-debug/CMakeFiles/rebuild_cache.dir
