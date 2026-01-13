@@ -1,0 +1,19 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/pborz/Desktop/forex -B /Users/pborz/Desktop/forex/cmake-build-debug
+CMake Error at CMakeLists.txt:9 (find_package):
+  By not providing "Findpqxx.cmake" in CMAKE_MODULE_PATH this project has
+  asked CMake to find a package configuration file provided by "pqxx", but
+  CMake did not find one.
+
+  Could not find a package configuration file provided by "pqxx" with any of
+  the following names:
+
+    pqxxConfig.cmake
+    pqxx-config.cmake
+
+  Add the installation prefix of "pqxx" to CMAKE_PREFIX_PATH or set
+  "pqxx_DIR" to a directory containing one of the above files.  If "pqxx"
+  provides a separate development package or SDK, be sure it has been
+  installed.
+
+
+-- Configuring incomplete, errors occurred!
